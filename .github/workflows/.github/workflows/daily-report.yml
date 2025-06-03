@@ -1,0 +1,29 @@
+name: Relatório Diário SQHUB
+
+on:
+  schedule:
+    - cron: '0 12 * * *'  # Todo dia às 12h (9h no Brasil)
+  workflow_dispatch:  # Permite executar manualmente
+
+jobs:
+  send-report:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Setup Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.9'
+    
+    - name: Install dependencies
+      run: |
+        pip install requests
+    
+    - name: Run reporter
+      env:
+        JIRA_EMAIL: ${{ secrets.JIRA_EMAIL }}
+        JIRA_TOKEN: ${{ secrets.JIRA_TOKEN }}
+        DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+      run: python jira_reporter.py
